@@ -1,0 +1,4 @@
+ofxFlowTools
+ofxGui
+ofxKinect
+ofxOpenCv
