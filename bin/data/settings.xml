@@ -1,159 +1,20 @@
 <group>
-	<average_FPS>130</average_FPS>
-	<minimum_FPS>121.209</minimum_FPS>
+	<average_FPS>56</average_FPS>
+	<minimum_FPS>46.0548</minimum_FPS>
 	<fullscreen__F_>1</fullscreen__F_>
 	<show_gui__G_>1</show_gui__G_>
-	<flip_camera>1</flip_camera>
-	<draw_camera__C_>0</draw_camera__C_>
-	<draw_mode>2</draw_mode>
-	<MODE>Particles      (2)</MODE>
-	<optical_flow>
-		<strength>100</strength>
-		<offset>1</offset>
-		<lambda>0.01</lambda>
-		<threshold>0.00612245</threshold>
-		<inverse_x>0</inverse_x>
-		<inverse_y>0</inverse_y>
-		<time_decay_blur>
-			<decay>3</decay>
-			<blur_radius>3</blur_radius>
-		</time_decay_blur>
-	</optical_flow>
-	<velocity_mask>
-		<strength>2.5</strength>
-		<hue>0</hue>
-		<saturation>3</saturation>
-		<blur_passes>3</blur_passes>
-		<blur_radius>5</blur_radius>
-	</velocity_mask>
-	<fluid_solver>
-		<reset>0</reset>
-		<speed>1.53061</speed>
-		<cell_size>1.2551</cell_size>
-		<iterations>40</iterations>
-		<viscosity>0.4</viscosity>
-		<vorticity>0</vorticity>
-		<dissipation>0.01</dissipation>
-		<advanced_dissipation>
-			<velocity_offset>-0.001</velocity_offset>
-			<density_offset>0</density_offset>
-			<temperature_offset>0.005</temperature_offset>
-		</advanced_dissipation>
-		<smoke_buoyancy>
-			<sigma>0.05</sigma>
-			<weight>0.05</weight>
-			<ambient_temperature>0</ambient_temperature>
-			<gravity>0, 0.118914</gravity>
-		</smoke_buoyancy>
-		<maximum>
-			<clampForce>0.05</clampForce>
-			<density>2</density>
-			<velocity>4</velocity>
-			<temperature>2</temperature>
-		</maximum>
-		<density_from_pressure>0</density_from_pressure>
-		<density_from_vorticity>-0.1</density_from_vorticity>
-	</fluid_solver>
-	<particle_flow>
-		<active>1</active>
-		<speed>1.53061</speed>
-		<cell_size>1.2551</cell_size>
-		<birth_chance>1</birth_chance>
-		<birth_velocity_chance>0.392857</birth_velocity_chance>
-		<lifespan>1.53061</lifespan>
-		<lifespan_spread>0.826531</lifespan_spread>
-		<mass>2</mass>
-		<mass_spread>0.739796</mass_spread>
-		<size>3.11224</size>
-		<size_spread>1</size_spread>
-		<twinkle_speed>2.65306</twinkle_speed>
-		<gravity>0, -0.204082</gravity>
-	</particle_flow>
-	<mouse_left_button>
-		<reset>0</reset>
-		<draw_full_res>
-			<non_den_vel_tem_prs_ob>1</non_den_vel_tem_prs_ob>
-			<is_temporary>1</is_temporary>
-			<force>1, 1, 1, 1</force>
-			<strength>1</strength>
-			<radius>0.035</radius>
-			<edge>1</edge>
-			<reset>0</reset>
-		</draw_full_res>
-		<draw_flow_res_1>
-			<non_den_vel_tem_prs_ob>2</non_den_vel_tem_prs_ob>
-			<is_temporary>1</is_temporary>
-			<force>-0.000520833, 0.000925928, 0, 1</force>
-			<strength>1</strength>
-			<radius>0.035</radius>
-			<edge>1</edge>
-			<reset>0</reset>
-		</draw_flow_res_1>
-		<draw_flow_res_2>
-			<non_den_vel_tem_prs_ob>3</non_den_vel_tem_prs_ob>
-			<is_temporary>1</is_temporary>
-			<force>1, 0, 0, 1</force>
-			<strength>1</strength>
-			<radius>0.035</radius>
-			<edge>1</edge>
-			<reset>0</reset>
-		</draw_flow_res_2>
-	</mouse_left_button>
-	<mouse_right_button>
-		<reset>0</reset>
-		<draw_full_res>
-			<non_den_vel_tem_prs_ob>1</non_den_vel_tem_prs_ob>
-			<is_temporary>0</is_temporary>
-			<force>1, 1, 1, 1</force>
-			<strength>1</strength>
-			<radius>0.035</radius>
-			<edge>1</edge>
-			<reset>0</reset>
-		</draw_full_res>
-		<draw_flow_res_1>
-			<non_den_vel_tem_prs_ob>2</non_den_vel_tem_prs_ob>
-			<is_temporary>0</is_temporary>
-			<force>0, -0.000925899, 0, 1</force>
-			<strength>1</strength>
-			<radius>0.035</radius>
-			<edge>1</edge>
-			<reset>0</reset>
-		</draw_flow_res_1>
-		<draw_flow_res_2>
-			<non_den_vel_tem_prs_ob>3</non_den_vel_tem_prs_ob>
-			<is_temporary>0</is_temporary>
-			<force>1, 0, 0, 1</force>
-			<strength>1</strength>
-			<radius>0.035</radius>
-			<edge>1</edge>
-			<reset>0</reset>
-		</draw_flow_res_2>
-	</mouse_right_button>
-	<visualizers>
-		<show_scalar>1</show_scalar>
-		<show_field>1</show_field>
-		<scalar_scale>0.151786</scalar_scale>
-		<velocity_scale>0.1</velocity_scale>
-		<temperature_scale>0.1</temperature_scale>
-		<pressure_scale>0.02</pressure_scale>
-		<line_smooth>0</line_smooth>
-	</visualizers>
-	<velocity_dots>
-		<distance_scale>0.1</distance_scale>
-		<size_scale>1.5</size_scale>
-		<min_dot_size>2</min_dot_size>
-		<max_dot_size>10</max_dot_size>
-	</velocity_dots>
-<group/>
-<farThreshold>187</farThreshold>
-<DRAW_SOURCE__C_>0</DRAW_SOURCE__C_>
+	<DRAW_SOURCE__C_>0</DRAW_SOURCE__C_>
 	<SHOW_KINECT>0</SHOW_KINECT>
-	<USE_KINECT>1</USE_KINECT>
-<alphaNoneVel>2925</alphaNoneVel>
-	<alphaNone>0</alphaNone>
-<erode>0</erode>
-	<dilate>0</dilate>
-<presence>0</presence>
+	<presence>1</presence>
 	<minAreaPresIn>1000</minAreaPresIn>
 	<minAreaPresOut>500</minAreaPresOut>
+	<farThreshold>150</farThreshold>
+	<erode>0</erode>
+	<dilate>0</dilate>
+	<alphaNoneVel>550</alphaNoneVel>
+	<alphaNone>111.948</alphaNone>
+<group/>
+<cropLeft>0</cropLeft>
+	<cropRight>0</cropRight>
+	<showCrop>0</showCrop>
 </group>
