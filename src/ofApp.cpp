@@ -48,12 +48,9 @@ void ofApp::setup(){
 	cameraFbo.allocate(640, 480);
 	cameraFbo.black();
 	
-	kinect.open(0);
 	kinect.init(false, false); // disable video image (faster fps)
 
-	if (!kinect.isConnected()) {
-		cout << "kinect is NOT connected" << endl;
-	}
+	kinect.open(0);
 
 	//    kinect.setLed(ofxKinect::LED_OFF);
 
