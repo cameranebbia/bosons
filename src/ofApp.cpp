@@ -114,8 +114,8 @@ void ofApp::setupGui() {
 	gui.add(doDrawCamBackground.set("DRAW SOURCE (C)", true));
 	gui.add(showKinect.set("SHOW KINECT", true));
 	gui.add(presence.set("presence", true));
-	gui.add(minAreaPresIn.set("minAreaPresIn", 1000, 0, 5000));
-	gui.add(minAreaPresOut.set("minAreaPresOut", 500, 0, 5000));
+	gui.add(minAreaPresIn.set("minAreaPresIn", 1000, 0, 25000));
+	gui.add(minAreaPresOut.set("minAreaPresOut", 500, 0, 25000));
 	
 	gui.add(farThreshold.set("farThreshold", 150, 0, 255));
 	gui.add(erode.set("erode", 0, 0, 40));
@@ -245,7 +245,7 @@ void ofApp::update(){
 
 		int type = CV_THRESH_TOZERO;
 
-		cvThreshold(grayImageIn.getCvImage(), grayImageThresh.getCvImage(), farThreshold, 255, type);
+		cvThreshold(grayImageIn.getCvImage(), grayImageThresh.getCvImage(), (255-farThreshold), 255, type);
 
 		grayImageThresh.flagImageChanged();
 
