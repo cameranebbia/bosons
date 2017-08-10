@@ -6,6 +6,9 @@ void ofApp::setup(){
 	ofSetVerticalSync(false);
 	ofSetLogLevel(OF_LOG_NOTICE);
 	
+
+	screenshotCount = 0;
+
 	partNone.loadImage("partNone.jpg");
 
 	partNoneRotVel = 0.7;
@@ -90,13 +93,22 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::setupGui() {
-	
-	gui.setup("settings");
+
+	gui.setup("SETTINGS");
 	gui.setDefaultBackgroundColor(ofColor(0, 0, 0, 127));
 	gui.setDefaultFillColor(ofColor(160, 160, 160, 160));
+
+	guiEffect.setPosition(20, 20);
+
+	guiEffect.setup("EFFECT", "settingsEffect.xml");
+	guiEffect.setDefaultBackgroundColor(ofColor(0, 0, 0, 127));
+	guiEffect.setDefaultFillColor(ofColor(160, 160, 160, 160));
+	
+	guiEffect.setPosition(20, 500);
+
 	gui.add(guiFPS.set("average FPS", 0, 0, 60));
 	gui.add(guiMinFPS.set("minimum FPS", 0, 0, 60));
-	gui.add(doFullScreen.set("fullscreen (F)", false));
+	gui.add(doFullScreen.set("fullscreen (F)", true));
 	doFullScreen.addListener(this, &ofApp::setFullScreen);
 	gui.add(toggleGuiDraw.set("show gui (G)", false));
 	gui.add(doDrawCamBackground.set("DRAW SOURCE (C)", true));
@@ -108,15 +120,21 @@ void ofApp::setupGui() {
 	gui.add(farThreshold.set("farThreshold", 150, 0, 255));
 	gui.add(erode.set("erode", 0, 0, 40));
 	gui.add(dilate.set("dilate", 0, 0, 40));
-	gui.add(drawMode.set("draw mode", DRAW_COMPOSITE, DRAW_COMPOSITE, DRAW_MOUSE));
-	drawMode.addListener(this, &ofApp::drawModeSetName);
-	gui.add(drawName.set("MODE", "draw name"));
-
 	gui.add(alphaNoneVel.set("alphaNoneVel", 0, 0, 5000));
 	gui.add(alphaNone.set("alphaNone", 0, 0, 255));
 
-	presence = false;
-	alphaNone = 0;
+
+	gui.add(cropLeft.set("cropLeft", 0, -20, 960));
+	gui.add(cropRight.set("cropRight", 0, -20, 960));
+	gui.add(showCrop.set("showCrop", false));
+
+	guiEffect.add(drawMode.set("draw mode", DRAW_COMPOSITE, DRAW_COMPOSITE, DRAW_MOUSE));
+	drawMode.addListener(this, &ofApp::drawModeSetName);
+	guiEffect.add(drawName.set("MODE", "draw name"));
+
+	guiEffect.add(toggleGuiEffectDraw.set("show effect gui (J)", false));
+
+
 	
 	int guiColorSwitch = 0;
 	ofColor guiHeaderColor[2];
@@ -126,35 +144,35 @@ void ofApp::setupGui() {
 	guiFillColor[0].set(160, 160, 80, 200);
 	guiFillColor[1].set(80, 160, 160, 200);
 	
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(opticalFlow.parameters);
+	guiEffect.add(opticalFlow.parameters);
 	
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(velocityMask.parameters);
+	guiEffect.add(velocityMask.parameters);
 	
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(fluidSimulation.parameters);
+	guiEffect.add(fluidSimulation.parameters);
 
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(particleFlow.parameters);
+	guiEffect.add(particleFlow.parameters);
 	
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(mouseForces.leftButtonParameters);
+	guiEffect.add(mouseForces.leftButtonParameters);
 	
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(mouseForces.rightButtonParameters);
+	guiEffect.add(mouseForces.rightButtonParameters);
 	
 	visualizeParameters.setName("visualizers");
 	visualizeParameters.add(showScalar.set("show scalar", true));
@@ -170,24 +188,40 @@ void ofApp::setupGui() {
 	visualizeParameters.add(velocityLineSmooth.set("line smooth", false));
 	velocityLineSmooth.addListener(this, &ofApp::setVelocityLineSmooth);
 	
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(visualizeParameters);
+	guiEffect.add(visualizeParameters);
 	
-	gui.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
-	gui.setDefaultFillColor(guiFillColor[guiColorSwitch]);
+	guiEffect.setDefaultHeaderBackgroundColor(guiHeaderColor[guiColorSwitch]);
+	guiEffect.setDefaultFillColor(guiFillColor[guiColorSwitch]);
 	guiColorSwitch = 1 - guiColorSwitch;
-	gui.add(velocityDots.parameters);
+	guiEffect.add(velocityDots.parameters);
 
 	// if the settings file is not present the parameters will not be set during this setup
+	if (!ofFile("settingsEffect.xml"))
+		guiEffect.saveToFile("settingsEffect.xml");
+	
+	guiEffect.loadFromFile("settingsEffect.xml");
+
+	toggleGuiEffectDraw= false;
+
+
+	guiEffect.minimizeAll();
+	
 	if (!ofFile("settings.xml"))
 		gui.saveToFile("settings.xml");
-	
+
 	gui.loadFromFile("settings.xml");
 	
-	gui.minimizeAll();
 	toggleGuiDraw = false;
+
+	
+
+	doFullScreen = true;
+	presence = false;
+	alphaNone = 0;
+	showCrop = false;
 
 	
 }
@@ -368,6 +402,7 @@ void ofApp::keyPressed(int key){
 	switch (key) {
 		case 'G':
 		case 'g': toggleGuiDraw = !toggleGuiDraw; break;
+		case 'j': toggleGuiEffectDraw = !toggleGuiEffectDraw; break;
 		case 'f':
 		case 'F': doFullScreen.set(!doFullScreen.get()); break;
 		case 'c':
@@ -388,8 +423,22 @@ void ofApp::keyPressed(int key){
 			fluidSimulation.reset();
 			mouseForces.reset();
 			break;
+
+		case 's':
+			gui.saveToFile("settings.xml");
+			break;
 		
-		
+		case 'l':
+			guiEffect.loadFromFile("settingsEffect.xml");
+			gui.loadFromFile("settings.xml");
+			break;
+
+		case 'x':
+			screenshot.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+			screenshot.save("screenshot" + ofToString(screenshotCount) + ".jpg");
+			screenshotCount++;
+			break;
+
 		default: break;
 	}
 }
@@ -448,7 +497,20 @@ void ofApp::draw(){
 				//case DRAW_MOUSE: drawMouseForces(); break;
 				//case DRAW_VELDOTS: drawVelocityDots(); break;
 		}
+
+		ofSetColor(0, 255);
+		if (showCrop)
+			ofSetColor(255, 0, 0, 255);
+		ofDrawRectangle(-2, 0, cropLeft, 1200);
+		ofDrawRectangle(1922, 0, -cropRight, 1200);
+		ofSetColor(255, 255);
+
 		drawGui();
+		if (toggleGuiEffectDraw) {
+			guiEffect.draw();
+		}
+		ofDrawBitmapString("PRESS G -> TOGGLE GUI \nF -> TOGGLE FULLSCREEN \nS -> SAVE SETTINGS.XML \nL -> (RE)LOAD SETTINGS.XML", 20, 390);
+
 	}
 	if (showKinect) {
 		ofDrawRectangle(300 - 5, 200 - 5, 320 + 10, 240 + 10);

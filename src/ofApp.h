@@ -93,8 +93,14 @@ public:
 	ofParameter<int>	erode;
 	ofParameter<int> dilate;
 
+
+	ofParameter<int> cropLeft, cropRight;
+	ofParameter<bool> showCrop;
 	
 
+
+	int screenshotCount;
+	ofImage screenshot;
 
 	//////---------------------------------------------------------------------------
 
@@ -144,10 +150,16 @@ public:
 	
 	// GUI
 	ofxPanel			gui;
+
+	ofxPanel			guiEffect;
+
 	void				setupGui();
 	void				keyPressed(int key);
 	void				drawGui();
 	ofParameter<bool>	toggleGuiDraw;
+	
+	ofParameter<bool>	toggleGuiEffectDraw;
+
 	ofParameter<float>	guiFPS;
 	ofParameter<float>	guiMinFPS;
 	deque<float>		deltaTimeDeque;
