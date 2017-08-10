@@ -78,7 +78,7 @@ void ofApp::setup(){
 	lastTime = ofGetElapsedTimef();
 
 	background.loadSound("audio/bg.wav");
-	sound.loadSound("audio/stein6.wav");
+	sound.loadSound("audio/stein6.mp3");
 
 	background.setVolume(0.3);
 	background.setLoop(true);
