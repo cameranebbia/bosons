@@ -1,20 +1,30 @@
 <group>
-	<average_FPS>56</average_FPS>
-	<minimum_FPS>46.0548</minimum_FPS>
+	<average_FPS>50</average_FPS>
+	<minimum_FPS>42.4456</minimum_FPS>
 	<fullscreen__F_>1</fullscreen__F_>
 	<show_gui__G_>1</show_gui__G_>
 	<DRAW_SOURCE__C_>0</DRAW_SOURCE__C_>
-	<SHOW_KINECT>0</SHOW_KINECT>
+	<SHOW_KINECT>1</SHOW_KINECT>
+  <mirror_X>1</mirror_X>
+  <mirror_Y>0</mirror_Y>
 	<presence>1</presence>
-	<minAreaPresIn>1000</minAreaPresIn>
-	<minAreaPresOut>500</minAreaPresOut>
-	<farThreshold>150</farThreshold>
+	<minAreaPresIn>2250</minAreaPresIn>
+	<minAreaPresOut>1250</minAreaPresOut>
+	<farThreshold>151</farThreshold>
 	<erode>0</erode>
 	<dilate>0</dilate>
 	<alphaNoneVel>550</alphaNoneVel>
-	<alphaNone>111.948</alphaNone>
-<group/>
-<cropLeft>0</cropLeft>
+	<alphaNone>0</alphaNone>
+  <cropLeft>0</cropLeft>
 	<cropRight>0</cropRight>
 	<showCrop>0</showCrop>
+  <backgroundVol>0</backgroundVol>
+  <soundVol>1</soundVol>
+  <kinectDiffSkip>3</kinectDiffSkip>
+	<soundMoveSpeed>0.776515</soundMoveSpeed>
+	<volFade>0.04</volFade>
+  <soundVolMove>0</soundVolMove>
+  <soundMoveScaleDown>33000</soundMoveScaleDown>
+	<threshMoveAudioMin>0.16</threshMoveAudioMin>
+	<threshMoveAudioMax>0.755</threshMoveAudioMax>
 </group>

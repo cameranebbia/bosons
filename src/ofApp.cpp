@@ -7,12 +7,10 @@ void ofApp::setup(){
 	ofSetLogLevel(OF_LOG_NOTICE);
 	
 
-	screenshotCount = 0;
 
 	partNone.loadImage("partNone.jpg");
 
-	partNoneRotVel = 0.7;
-	partNoneRotAmount = 10;
+	
 
 	drawWidth = 1280;
 	drawHeight = 720;
@@ -55,14 +53,6 @@ void ofApp::setup(){
 	//    kinect.setLed(ofxKinect::LED_OFF);
 
 	
-	mirrorH = false;
-	mirrorV = false;
-
-	showMask = false;
-
-	showInfo = false;
-
-	showKinect= false;
 
 	grayImageIn.allocate(kinect.width, kinect.height);
 	grayImageThresh.allocate(kinect.width, kinect.height);
@@ -77,7 +67,7 @@ void ofApp::setup(){
 	background.loadSound("audio/bg.wav");
 	sound.loadSound("audio/stein6.mp3");
 
-	background.setVolume(0.3);
+	background.setVolume(backgroundVol);
 	background.setLoop(true);
 	sound.setVolume(0);
 	sound.setLoop(true);
@@ -85,6 +75,7 @@ void ofApp::setup(){
 	background.play();
 	sound.play();
 
+	screenshotCount = 0;
 
 }
 
@@ -94,14 +85,12 @@ void ofApp::setupGui() {
 	gui.setup("SETTINGS");
 	gui.setDefaultBackgroundColor(ofColor(0, 0, 0, 127));
 	gui.setDefaultFillColor(ofColor(160, 160, 160, 160));
-
-	guiEffect.setPosition(20, 20);
+	gui.setPosition(20, 20);
 
 	guiEffect.setup("EFFECT", "settingsEffect.xml");
 	guiEffect.setDefaultBackgroundColor(ofColor(0, 0, 0, 127));
 	guiEffect.setDefaultFillColor(ofColor(160, 160, 160, 160));
-	
-	guiEffect.setPosition(20, 500);
+	guiEffect.setPosition(1680, 20);
 
 	gui.add(guiFPS.set("average FPS", 0, 0, 60));
 	gui.add(guiMinFPS.set("minimum FPS", 0, 0, 60));
@@ -110,6 +99,8 @@ void ofApp::setupGui() {
 	gui.add(toggleGuiDraw.set("show gui (G)", false));
 	gui.add(doDrawCamBackground.set("DRAW SOURCE (C)", true));
 	gui.add(showKinect.set("SHOW KINECT", true));
+	gui.add(mirrorX.set("mirror X", true));
+	gui.add(mirrorY.set("mirror Y", false));
 	gui.add(presence.set("presence", true));
 	gui.add(minAreaPresIn.set("minAreaPresIn", 1000, 0, 25000));
 	gui.add(minAreaPresOut.set("minAreaPresOut", 500, 0, 25000));
@@ -117,6 +108,7 @@ void ofApp::setupGui() {
 	gui.add(farThreshold.set("farThreshold", 150, 0, 255));
 	gui.add(erode.set("erode", 0, 0, 40));
 	gui.add(dilate.set("dilate", 0, 0, 40));
+
 	gui.add(alphaNoneVel.set("alphaNoneVel", 0, 0, 5000));
 	gui.add(alphaNone.set("alphaNone", 0, 0, 255));
 
@@ -124,14 +116,36 @@ void ofApp::setupGui() {
 	gui.add(cropLeft.set("cropLeft", 0, -20, 960));
 	gui.add(cropRight.set("cropRight", 0, -20, 960));
 	gui.add(showCrop.set("showCrop", false));
+	
+	gui.add(backgroundVol.set("backgroundVol", 0, 0, 1));
+	gui.add(soundVol.set("soundVol", 0, 0, 1));
+
+
+	gui.add(kinectDiffSkip.set("kinectDiffSkip", 0, 0, 10));
+
+	
+	gui.add(soundMoveScaleDown.set("soundMoveScaleDown", 10000, 1, 100000));
+	gui.add(soundMoveSpeed.set("soundMoveSpeed", 0, 0, 1));
+	
+	gui.add(threshMoveAudioMin.set("threshMoveAudioMin", 0, 0, 1));
+	gui.add(threshMoveAudioMax.set("threshMoveAudioMax", 0, 0, 1));
+
+	gui.add(volFade.set("volFade", 0.04, 0, 0.2));
+	
+	gui.add(soundVolMove.set("soundVolMove", 0, 0, 1));
+
+	gui.add(partNoneRotVel.set("partNoneRotVel ", 0.7, 0, 4));
+	gui.add(partNoneRotAmount.set("partNoneRotAmount", 10, 0, 100));
+
+
+
+
 
 	guiEffect.add(drawMode.set("draw mode", DRAW_COMPOSITE, DRAW_COMPOSITE, DRAW_MOUSE));
 	drawMode.addListener(this, &ofApp::drawModeSetName);
 	guiEffect.add(drawName.set("MODE", "draw name"));
 
 	guiEffect.add(toggleGuiEffectDraw.set("show effect gui (J)", false));
-
-
 	
 	int guiColorSwitch = 0;
 	ofColor guiHeaderColor[2];
@@ -211,15 +225,18 @@ void ofApp::setupGui() {
 
 	gui.loadFromFile("settings.xml");
 	
-	toggleGuiDraw = false;
 
-	
+	toggleGuiDraw = false;
 
 	doFullScreen = true;
 	presence = false;
 	alphaNone = 0;
 	showCrop = false;
 
+	soundMoveSpeed = 0;
+	soundVolMove = 0;
+
+	kinectDiffCount = 0;
 	
 }
 
@@ -238,7 +255,7 @@ void ofApp::update(){
 
 		grayImageIn.setFromPixels(kinect.getDepthPixels());
 
-		grayImageIn.mirror(mirrorV, mirrorH);
+		grayImageIn.mirror(mirrorY, mirrorX);
 
 		int type = CV_THRESH_TOZERO;
 
@@ -254,42 +271,45 @@ void ofApp::update(){
 		}
 		/////////////// SOUNDS \\\\\\\\\\\\\\\\
 
-		grayImageKinectDiff = grayImageThresh;
-		grayImageKinectDiff.absDiff(grayImageKinectOld);
-		grayImageKinectOld = grayImageThresh;
+		kinectDiffCount++;
+		if (kinectDiffCount >= kinectDiffSkip) {
+			kinectDiffCount = 0;
+			grayImageKinectDiff = grayImageThresh;
+			grayImageKinectDiff.absDiff(grayImageKinectOld);
+			grayImageKinectOld = grayImageThresh;
 
-		grayImageKinectDiff.threshold(100);
+			soundMoveSpeed = grayImageKinectDiff.countNonZeroInRegion(0, 0, grayImageKinectDiff.width, grayImageKinectDiff.height) / (float)soundMoveScaleDown;
 
-		kinectMovementSpeed = grayImageKinectDiff.countNonZeroInRegion(0, 0, grayImageKinectDiff.width, grayImageKinectDiff.height);
+		}
+		
+		
+		int areaPres = grayImageThresh.countNonZeroInRegion(0, 0, grayImageThresh.width, grayImageThresh.height);
+		if (areaPres < minAreaPresOut) {
+			presence = false;
+			grayImageKinectOld = grayImageThresh;
+			soundVolMove += (-soundVolMove) * volFade;
 
+		}
+		else if (areaPres > minAreaPresIn)
+		{
+			presence = true;
+			float soundVolMoveMap = ofMap(soundMoveSpeed, threshMoveAudioMin, threshMoveAudioMax, 0, 1, true);
+			soundVolMove += (soundVolMoveMap - soundVolMove) * volFade;
 
+		}
+		
 
+		sound.setVolume(soundVolMove*soundVol);
 
+		background.setVolume(backgroundVol);
 	}
 
 
-	if (kinectMovementSpeed >0) {
-		volume += (kinectMovementSpeed - volume) * volFade;
-	}
-	else if (kinectMovementSpeed <= 0 && prevMovSpd <= 0) {
-		volume += (kinectMovementSpeed - volume) * volFadeOut;
-	}
-
-
-	int areaPres = grayImageThresh.countNonZeroInRegion(0, 0, grayImageThresh.width, grayImageThresh.height);
-	if (areaPres < minAreaPresOut) {
-		presence = false;
-	}
-	else if (areaPres > minAreaPresIn)
-	{
-		presence = true;
-	}
-
-
-	prevMovSpd = kinectMovementSpeed;
 	
 
-	sound.setVolume(volume * volScale);
+
+	
+
 
 	fluidSimulation.addVelocity(opticalFlow.getOpticalFlowDecay());
 	fluidSimulation.addDensity(velocityMask.getColorMask());
@@ -401,7 +421,12 @@ void ofApp::keyPressed(int key){
 		case 'g': toggleGuiDraw = !toggleGuiDraw; break;
 		case 'j': toggleGuiEffectDraw = !toggleGuiEffectDraw; break;
 		case 'f':
-		case 'F': doFullScreen.set(!doFullScreen.get()); break;
+		case 'F': 
+			doFullScreen.set(!doFullScreen.get()); 
+			if (!doFullScreen) {
+				ofSetWindowPosition(50, 50);
+			}
+			break;
 		case 'c':
 		case 'C': doDrawCamBackground.set(!doDrawCamBackground.get()); break;
 			
@@ -503,30 +528,28 @@ void ofApp::draw(){
 		ofSetColor(255, 255);
 
 		drawGui();
+		
+		ofDrawBitmapString("PRESS G -> TOGGLE GUI \nF -> TOGGLE FULLSCREEN \nS -> SAVE SETTINGS.XML \nL -> (RE)LOAD SETTINGS.XML", 20, 650);
+
+		if (showKinect) {
+			ofDrawRectangle(300 - 5, 200 - 5, 320 + 10, 240 + 10);
+			kinect.drawDepth(300, 200, 320, 240);
+			ofDrawRectangle(700 - 5, 200 - 5, 320 + 10, 240 + 10);
+			grayImageThresh.draw(700, 200, 320, 240);
+			ofDrawRectangle(1100 - 5, 200 - 5, 320 + 10, 240 + 10);
+			cameraFbo.draw(1100, 200, 320, 240);
+			ofDrawRectangle(1500 - 5, 200 - 5, 320 + 10, 240 + 10);
+			grayImageKinectDiff.draw(1500, 200, 320, 240);
+			ofDrawBitmapStringHighlight("KINECT DEPTH", 300, 470);
+			ofDrawBitmapStringHighlight("KINECT THRESHOLD", 700, 470);
+			ofDrawBitmapStringHighlight("FBO FOR FLOW", 1100, 470);
+			ofDrawBitmapStringHighlight("KINECT DIFFERENCE", 1500, 470);
+
+		}
 		if (toggleGuiEffectDraw) {
 			guiEffect.draw();
 		}
-		ofDrawBitmapString("PRESS G -> TOGGLE GUI \nF -> TOGGLE FULLSCREEN \nS -> SAVE SETTINGS.XML \nL -> (RE)LOAD SETTINGS.XML", 20, 390);
-
 	}
-	if (showKinect) {
-		ofDrawRectangle(300 - 5, 200 - 5, 320 + 10, 240 + 10);
-		kinect.drawDepth(300, 200, 320, 240);
-		ofDrawRectangle(700-5, 200-5, 320+10, 240+10);
-		grayImageThresh.draw(700, 200, 320, 240);
-		ofDrawRectangle(1100 - 5, 200 - 5, 320 + 10, 240 + 10);
-		cameraFbo.draw(1100, 200, 320, 240);
-		ofDrawRectangle(1500 - 5, 200 - 5, 320 + 10, 240 + 10);
-		grayImageKinectDiff.draw(1500, 200, 320, 240);
-		ofDrawBitmapStringHighlight("KINECT DEPTH", 300, 470);
-		ofDrawBitmapStringHighlight("KINECT THRESHOLD", 700, 470);
-		ofDrawBitmapStringHighlight("FBO FOR FLOW",1100, 470);
-		ofDrawBitmapStringHighlight("KINECT DIFFERENCE", 1500, 470);
-
-		}
-	//grayImageIn.draw(620, 200, 320, 240);
-	//grayImageKinectDiff.draw(940, 200, 320, 240);
-	//grayImageThresh.draw(1260, 200, 320, 240);
 }
 
 //--------------------------------------------------------------

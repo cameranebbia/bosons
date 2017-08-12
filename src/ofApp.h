@@ -37,31 +37,43 @@ public:
 
 	ofImage partNone;
 
-	float partNoneRotVel;
-	float partNoneRotAmount;
+	ofParameter<float> partNoneRotVel;
+	ofParameter<float> partNoneRotAmount;
 
-	bool showMask;
 
 	
 
-	bool showInfo;
 
 	////////// SOUNDS \\\\\\\\\
 	    
 	ofSoundPlayer  background;
 	ofSoundPlayer  sound;
 
-	int kinectMovementSpeed;
-	int prevMovSpd;
 
-	float volume = 0;
-	float volScale = 0.0001;
-	float volFade = 0.04;
-	float volFadeOut = 0.04;
+	
+	ofParameter<float> volFade;
+
+	ofParameter<int> soundMoveScaleDown;
+	ofParameter<float> soundMoveSpeed;
+	
+	
+	ofParameter<float> threshMoveAudioMin;
+	ofParameter<float> threshMoveAudioMax;
+
+	ofParameter<float> soundVol;
+	ofParameter<float> soundVolMove;
+
+	ofParameter<float> backgroundVol;
+	
+	ofParameter<int> kinectDiffSkip;
+	int kinectDiffCount;
+
+
 
 	//////////////\\\\\\\\\\\\\
 
-	bool mirrorH, mirrorV;
+	ofParameter<bool> mirrorX;
+	ofParameter<bool> mirrorY;
 
 	ofxKinect   kinect;
 
